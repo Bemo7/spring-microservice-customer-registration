@@ -13,6 +13,7 @@
   <url>http://www.bemojr.com</url>
   <modules>
     <module>customer</module>
+    <module>fraud</module>
   </modules>
 
   <properties>
@@ -70,8 +71,12 @@
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
           <version>${spring.boot.maven.plugin.version}</version>
+<!--          <configuration>-->
+<!--            <mainClass>customer.com.bemojr.fraud.CustomerApplication</mainClass>-->
+<!--          </configuration>-->
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
+
 </project>
