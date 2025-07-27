@@ -1,4 +1,20 @@
 services:
+  customer-service:
+    container_name: customer-service
+    build:
+      context: ./customer
+      dockerfile: Dockerfile
+    networks:
+      - customer-postgres-net
+      - microservice-net
+    depends_on:
+      - customer-postgres
+      - eureka-service
+      - fraud-service
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
   customer-postgres:
     container_name: customer-postgres
     image: postgres
@@ -8,10 +24,24 @@ services:
       POSTGRES_DB: customer
     volumes:
       - customer-postgres:/data/postgres
-    ports:
-      - "5433:5432"
+#   For dev environment
+#    ports:
+#      - "5433:5432"
     networks:
       - customer-postgres-net
+    restart: unless-stopped
+
+  fraud-service:
+    container_name: fraud-service
+    build:
+      context: ./fraud
+      dockerfile: Dockerfile
+    networks:
+      - fraud-postgres-net
+      - microservice-net
+    depends_on:
+      - fraud-postgres
+      - eureka-service
     restart: unless-stopped
 
   fraud-postgres:
@@ -23,10 +53,22 @@ services:
       POSTGRES_DB: fraud
     volumes:
       - fraud-postgres:/data/postgres
-    ports:
-      - "5434:5432"
+#   For dev environment
+#    ports:
+#      - "5434:5432"
     networks:
       - fraud-postgres-net
+    restart: unless-stopped
+
+  eureka-service:
+    container_name: eureka-service
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    networks:
+      - microservice-net
+    ports:
+      - "8761:8761"
     restart: unless-stopped
 
   pgadmin:
@@ -48,10 +90,20 @@ services:
       - customer-postgres
     restart: unless-stopped
 
+  zipkin:
+    container_name: zipkin
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - microservice-net
+
 networks:
   customer-postgres-net:
     driver: bridge
   fraud-postgres-net:
+    driver: bridge
+  microservice-net:
     driver: bridge
 
 volumes:
